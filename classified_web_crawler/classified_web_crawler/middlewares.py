@@ -6,6 +6,8 @@
 # https://docs.scrapy.org/en/latest/topics/spider-middleware.html
 
 from scrapy import signals
+from scrapy.http import HtmlResponse
+from selenium import webdriver
 
 
 class ClassifiedWebCrawlerSpiderMiddleware(object):
@@ -57,6 +59,17 @@ class ClassifiedWebCrawlerSpiderMiddleware(object):
 
 
 class ClassifiedWebCrawlerDownloaderMiddleware(object):
+    def __init__(self) -> None:
+        super().__init__()
+        import chromedriver_binary
+
+        chrome_options = webdriver.ChromeOptions()
+        chrome_options.add_argument('--no-sandbox')
+        chrome_options.add_argument('--window-size=1420,1080')
+        chrome_options.add_argument('--headless')
+        chrome_options.add_argument('--disable-gpu')
+        self.driver = webdriver.Chrome(chrome_options=chrome_options)
+
     # Not all methods need to be defined. If a method is not defined,
     # scrapy acts as if the downloader middleware does not modify the
     # passed objects.
@@ -69,6 +82,9 @@ class ClassifiedWebCrawlerDownloaderMiddleware(object):
         return s
 
     def process_request(self, request, spider):
+        self.driver.get(request.url)
+        body = str.encode(self.driver.page_source)
+        print("ASAS ASD ASD ASD",self.driver.current_url)
         # Called for each request that goes through the downloader
         # middleware.
 
@@ -78,7 +94,12 @@ class ClassifiedWebCrawlerDownloaderMiddleware(object):
         # - or return a Request object
         # - or raise IgnoreRequest: process_exception() methods of
         #   installed downloader middleware will be called
-        return None
+        return HtmlResponse(
+            self.driver.current_url,
+            body=body,
+            encoding='utf-8',
+            request=request
+        )
 
     def process_response(self, request, response, spider):
         # Called with the response returned from the downloader.
