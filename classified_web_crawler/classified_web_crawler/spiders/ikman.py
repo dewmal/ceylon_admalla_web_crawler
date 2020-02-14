@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 import datetime
+import os
 
 from bs4 import BeautifulSoup
 from scrapy.linkextractors import LinkExtractor
@@ -35,7 +36,8 @@ class IkmanSpider(CrawlSpider):
         chrome_options.add_argument('--headless')
         chrome_options.add_argument('--log-level=3')
         chrome_options.add_argument('--disable-gpu')
-        self.driver = webdriver.Chrome(chrome_options=chrome_options)
+        path = os.getenv("CHROMEDRIVER_DIR")
+        self.driver = webdriver.Chrome(executable_path=f"{path}",chrome_options=chrome_options)
 
     def parse_item(self, response):
         self.parse(response)
