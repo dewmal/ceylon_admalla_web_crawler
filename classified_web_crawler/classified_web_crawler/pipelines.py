@@ -4,6 +4,8 @@
 #
 # Don't forget to add your pipeline to the ITEM_PIPELINES setting
 # See: https://docs.scrapy.org/en/latest/topics/item-pipeline.html
+import logging
+
 import pymongo
 
 
@@ -31,5 +33,9 @@ class ClassifiedWebCrawlerPipeline(object):
         self.client.close()
 
     def process_item(self, item, spider):
-        self.db[self.collection_name].insert_one(dict(item))
+        link_exists = self.db[self.collection_name].find({"url": item.url})
+        if not link_exists:
+            self.db[self.collection_name].insert_one(dict(item))
+        else:
+            logging.info("Link already in db")
         return item
