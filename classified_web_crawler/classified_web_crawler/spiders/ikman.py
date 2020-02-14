@@ -37,7 +37,7 @@ class IkmanSpider(CrawlSpider):
         chrome_options.add_argument('--log-level=3')
         chrome_options.add_argument('--disable-gpu')
         # path = os.getenv("CHROMEDRIVER_DIR")
-        self.driver = webdriver.Chrome(chrome_options=chrome_options)
+        self.driver = webdriver.Chrome('/usr/local/bin/chromedriver', chrome_options=chrome_options)
 
     def parse_item(self, response):
         self.parse(response)
