@@ -17,7 +17,15 @@ process = CrawlerProcess(settings={
     ,
     "DOWNLOADER_MIDDLEWARES": {
         'scrapy_selenium.SeleniumMiddleware': 800
-    }
+    },
+    "MONGO_URI": "mongodb://root:br2n4P3gqotR@54.245.162.82:27017",
+    "MONGO_DATABASE": "classified_crawler",
+    "ITEM_PIPELINES": {
+        'classified_web_crawler.classified_web_crawler.pipelines.ClassifiedWebCrawlerPipeline': 300,
+    },
+    "AUTOTHROTTLE_ENABLED": True,
+    "AUTOTHROTTLE_START_DELAY": 1,
+    "AUTOTHROTTLE_MAX_DELAY": 3
 })
 
 process.crawl(IkmanSpider)

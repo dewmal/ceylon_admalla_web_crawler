@@ -10,6 +10,8 @@ import scrapy
 
 class ClassifiedWebCrawlerItem(scrapy.Item):
     # define the fields for your item here like:
+    url = scrapy.Field()
+    base_image = scrapy.Field()
     title = scrapy.Field()
     description = scrapy.Field()
     price = scrapy.Field()
@@ -20,4 +22,6 @@ class ClassifiedWebCrawlerItem(scrapy.Item):
     metas = scrapy.Field()
     tags = scrapy.Field()
     raw_data = scrapy.Field()
-
+    create_date = scrapy.Field()
+    crawled_date = scrapy.Field()
+    expire_date = scrapy.Field()
