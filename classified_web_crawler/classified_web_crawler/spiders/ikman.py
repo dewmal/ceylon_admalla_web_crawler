@@ -143,7 +143,7 @@ class IkmanSpider(CrawlSpider):
                 metas[key] = value
         except:
             pass
-        
+
         item = ClassifiedWebCrawlerItem()
         item["crawler_name"] = self.name
         item["url"] = response.url
