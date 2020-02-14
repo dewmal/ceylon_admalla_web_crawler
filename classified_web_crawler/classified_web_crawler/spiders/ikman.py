@@ -74,7 +74,9 @@ class IkmanSpider(CrawlSpider):
                 val = f'{tag.attrs["content"].lower()}'
                 if val.startswith("noarchive,nofollow,unavailable_after:"):
                     expire_date = val.replace("noarchive,nofollow,unavailable_after:", "")
+                    expire_date.st
                     break
+            # expire_date=datetime.strptime(post_date, "%Y-%m-%d %H:%M %p")
         except:
             pass
         try:
