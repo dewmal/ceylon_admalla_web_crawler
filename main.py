@@ -22,8 +22,8 @@ process = CrawlerProcess(settings={
         'classified_web_crawler.classified_web_crawler.pipelines.ClassifiedWebCrawlerPipeline': 300,
     },
     "AUTOTHROTTLE_ENABLED": True,
-    "AUTOTHROTTLE_START_DELAY": 1,
-    "AUTOTHROTTLE_MAX_DELAY": 3
+    "AUTOTHROTTLE_START_DELAY": 2,
+    "AUTOTHROTTLE_MAX_DELAY": 20
 })
 
 process.crawl(IkmanSpider)
