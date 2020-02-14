@@ -1,0 +1,19 @@
+# connection settings
+
+# connect to MongoDB using the following URL
+mongo-url = "mongodb://root:br2n4P3gqotR@44.233.75.14:27017"
+# connect to the Elasticsearch REST API at the following node URLs
+elasticsearch-urls = ["https://localhost:9200"]
+
+# frequently required settings
+
+# if you need to seed an index from a collection and not just listen and sync changes events
+# you can copy entire collections or views from MongoDB to Elasticsearch
+direct-read-namespaces = ["classified_crawler.classified_scraped_data"]
+
+# if you want to use MongoDB change streams instead of legacy oplog tailing use change-stream-namespaces
+# change streams require at least MongoDB API 3.6+
+# if you have MongoDB 4+ you can listen for changes to an entire database or entire deployment
+# in this case you usually don't need regexes in your config to filter collections unless you target the deployment.
+# to listen to an entire db use only the database name.  For a deployment use an empty string.
+change-stream-namespaces = ["classified_crawler"]

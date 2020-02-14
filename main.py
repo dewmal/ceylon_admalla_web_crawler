@@ -16,7 +16,7 @@ process = CrawlerProcess(settings={
     "SELENIUM_DRIVER_ARGUMENTS": ['-headless', '--disable-gpu', '--log-level=3']
     # '--headless' if using chrome instead of firefox
     ,
-    "MONGO_URI": "mongodb://root:br2n4P3gqotR@54.245.162.82:27017",
+    "MONGO_URI": "mongodb://root:br2n4P3gqotR@44.233.75.14:27017",
     "MONGO_DATABASE": "classified_crawler",
     "ITEM_PIPELINES": {
         'classified_web_crawler.classified_web_crawler.pipelines.ClassifiedWebCrawlerPipeline': 300,
