@@ -93,7 +93,7 @@ class IkmanSpider(CrawlSpider):
         # Location
         price = soup.select(
             'html body.on-item-detail div.app-content div.container.main div.ui-panel.is-rounded.item-detail div.ui-panel-content.ui-panel-block div.row.lg-g div.col-12.lg-8.item-body div.row.lg-g div.col-12.lg-8 div.item-price div.ui-price div.ui-price-tag span.amount')
-        price = [l.text for l in locations]
+        price = [l.text for l in price]
 
         # Tags
         tags = soup.select("li.ui-crumb.breadcrumb a span")
