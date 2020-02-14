@@ -33,9 +33,9 @@ class ClassifiedWebCrawlerPipeline(object):
         self.client.close()
 
     def process_item(self, item, spider):
-        link_exists = self.db[self.collection_name].find({"url": item.url})
-        if not link_exists:
+        number_of_links = self.db[self.collection_name].count_documents({"url": item.url})
+        if number_of_links == 0:
             self.db[self.collection_name].insert_one(dict(item))
         else:
-            logging.info("Link already in db")
+            logging.info(f"Link already in db |{number_of_links}")
         return item
