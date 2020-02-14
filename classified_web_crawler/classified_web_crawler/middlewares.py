@@ -4,10 +4,17 @@
 #
 # See documentation in:
 # https://docs.scrapy.org/en/latest/topics/spider-middleware.html
+import logging
+import re
+import sys
+import traceback
 
 from scrapy import signals
 from scrapy.http import HtmlResponse
 from selenium import webdriver
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.support.ui import WebDriverWait
 
 
 class ClassifiedWebCrawlerSpiderMiddleware(object):
@@ -61,14 +68,19 @@ class ClassifiedWebCrawlerSpiderMiddleware(object):
 class ClassifiedWebCrawlerDownloaderMiddleware(object):
     def __init__(self) -> None:
         super().__init__()
+        # import chromedriver_binary
         import chromedriver_binary
 
         chrome_options = webdriver.ChromeOptions()
         chrome_options.add_argument('--no-sandbox')
         chrome_options.add_argument('--window-size=1420,1080')
         chrome_options.add_argument('--headless')
+        chrome_options.add_argument('--log-level=3')
         chrome_options.add_argument('--disable-gpu')
         self.driver = webdriver.Chrome(chrome_options=chrome_options)
+
+        accept_url = "^(http|https):\/\/ikman.lk\/(en|si)\/ad\/([^/]+)(^\/)?$"
+        self.accept_url_pattern = re.compile(accept_url)
 
     # Not all methods need to be defined. If a method is not defined,
     # scrapy acts as if the downloader middleware does not modify the
@@ -82,24 +94,25 @@ class ClassifiedWebCrawlerDownloaderMiddleware(object):
         return s
 
     def process_request(self, request, spider):
-        self.driver.get(request.url)
-        body = str.encode(self.driver.page_source)
-        print("ASAS ASD ASD ASD",self.driver.current_url)
-        # Called for each request that goes through the downloader
-        # middleware.
+        logging.info("PRocess Selinum request")
+        logging.info(not self.accept_url_pattern.match(request.url))
+        if not self.accept_url_pattern.match(request.url):
+            return None
 
-        # Must either:
-        # - return None: continue processing this request
-        # - or return a Response object
-        # - or return a Request object
-        # - or raise IgnoreRequest: process_exception() methods of
-        #   installed downloader middleware will be called
-        return HtmlResponse(
-            self.driver.current_url,
-            body=body,
-            encoding='utf-8',
-            request=request
-        )
+        try:
+            self.driver.get(request.url)
+            WebDriverWait(self.driver, 10).until(
+                EC.presence_of_element_located((By.CSS_SELECTOR, "span.gtm-show-number"))
+            )
+            all_show_number = self.driver.find_element_by_css_selector("span.gtm-show-number")
+            logging.info(all_show_number)
+            all_show_number.click()
+            body = self.driver.page_source
+            return HtmlResponse(self.driver.current_url, body=body, encoding='utf-8', request=request)
+        except Exception as e:
+            logging.error(traceback.format_exc())
+            # or
+            logging.exception(sys.exc_info()[2])
 
     def process_response(self, request, response, spider):
         # Called with the response returned from the downloader.
@@ -122,3 +135,8 @@ class ClassifiedWebCrawlerDownloaderMiddleware(object):
 
     def spider_opened(self, spider):
         spider.logger.info('Spider opened: %s' % spider.name)
+
+    def spider_closed(self):
+        """Shutdown the driver when spider is closed"""
+
+        self.driver.quit()

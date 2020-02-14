@@ -17,4 +17,7 @@ class ClassifiedWebCrawlerItem(scrapy.Item):
     seller_name = scrapy.Field()
     seller_number = scrapy.Field()
     seller_email = scrapy.Field()
+    metas = scrapy.Field()
+    tags = scrapy.Field()
+    raw_data = scrapy.Field()
 

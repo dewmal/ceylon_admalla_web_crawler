@@ -1,7 +1,8 @@
 # -*- coding: utf-8 -*-
-import scrapy
+from bs4 import BeautifulSoup
 from scrapy.linkextractors import LinkExtractor
 from scrapy.spiders import Rule, CrawlSpider
+from selenium import webdriver
 
 from classified_web_crawler.classified_web_crawler.items import ClassifiedWebCrawlerItem
 
@@ -21,21 +22,66 @@ class IkmanSpider(CrawlSpider):
         ),
     )
 
+    def __init__(self, *a, **kw):
+        super().__init__(*a, **kw)
+        # import chromedriver_binary
+        import chromedriver_binary
+
+        chrome_options = webdriver.ChromeOptions()
+        chrome_options.add_argument('--no-sandbox')
+        chrome_options.add_argument('--window-size=1420,1080')
+        chrome_options.add_argument('--headless')
+        chrome_options.add_argument('--log-level=3')
+        chrome_options.add_argument('--disable-gpu')
+        self.driver = webdriver.Chrome(chrome_options=chrome_options)
+
     def parse_item(self, response):
-        title = response.css(".item-top > h1:nth-child(1)::text").get()
-        description = response.css("html body.on-item-detail div.app-content div.container.main div.ui-panel.is-rounded.item-detail div.ui-panel-content.ui-panel-block div.row.lg-g div.col-12.lg-8.item-body div.row.lg-g div.col-12.lg-8 div.item-description p::text").get()
-        price = response.css("html body.on-item-detail div.app-content div.container.main div.ui-panel.is-rounded.item-detail div.ui-panel-content.ui-panel-block div.row.lg-g div.col-12.lg-8.item-body div.row.lg-g div.col-12.lg-8 div.item-price div.ui-price div.ui-price-tag span.amount::text").get()
-        seller_name = response.css("html body.on-item-detail div.app-content div.container.main div.ui-panel.is-rounded.item-detail div.ui-panel-content.ui-panel-block div.row.lg-g div.item-top.col-12.lg-8 p.item-intro span.poster::text").get()
-        location = response.css(".location::text").get()
-        post_time = response.css(".location::text").get()
+        self.driver.get(response.url)
+        all_show_number = self.driver.find_element_by_css_selector("span.gtm-show-number")
+        all_show_number.click()
+
+        page_source = self.driver.page_source
+        soup = BeautifulSoup(page_source, 'html.parser')
+        title = soup.select("title")[0]
+        title = title.text if title else ''
+        # Content
+        content = soup.select("div.item-description")[0]
+        content = content.text if content else ''
+        # Person Name
+        person_name = soup.select("span.poster")[0]
+        person_name = person_name.text if person_name else ''
+        # Contact Details
+        contact_numbers = soup.select('.item-contact-more.is-showable ul:first-child span.h3')
+        contact_numbers = [c.text for c in contact_numbers]
+
+        # Location
+        locations = soup.select('p.item-intro span.location')
+        locations = [l.text for l in locations]
+
+        # Tags
+        tags = soup.select("li.ui-crumb.breadcrumb a span")
+        tags = [t.text for t in tags]
+
+        # Keys
+        metas_ = soup.select('div.item-properties dl')
+        metas = {}
+        for m in metas_:
+            key = m.select('dt')
+            key = key[0].text if key and len(key) > 0 else ''
+            value = m.select('dd')
+            value = value[0].text if value and len(value) > 0 else ''
+
+            metas[key] = value
 
         item = ClassifiedWebCrawlerItem()
         item["title"] = title
-        item["description"] = description
-        item["price"] = price
-        item["seller_name"] = seller_name
-        item["location"] = location
+        item["description"] = content
+        item["price"] = 0
+        item["seller_name"] = person_name
+        item["seller_number"] = contact_numbers
+        item["location"] = locations
+        item["tags"] = tags
+        item["metas"] = metas
+        item["raw"] = soup.text
 
-        print(item.values())
-
-        return item
+        yield item
