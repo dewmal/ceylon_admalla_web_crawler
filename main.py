@@ -16,9 +16,6 @@ process = CrawlerProcess(settings={
     "SELENIUM_DRIVER_ARGUMENTS": ['-headless', '--disable-gpu', '--log-level=3']
     # '--headless' if using chrome instead of firefox
     ,
-    "DOWNLOADER_MIDDLEWARES": {
-        'scrapy_selenium.SeleniumMiddleware': 800
-    },
     "MONGO_URI": "mongodb://root:br2n4P3gqotR@54.245.162.82:27017",
     "MONGO_DATABASE": "classified_crawler",
     "ITEM_PIPELINES": {
