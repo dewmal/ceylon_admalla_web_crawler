@@ -45,71 +45,105 @@ class IkmanSpider(CrawlSpider):
         all_show_number = self.driver.find_element_by_css_selector("span.gtm-show-number")
         all_show_number.click()
 
+        base_image = None
+        title = None
+        content = None
+        price = None
+        person_name = None
+        contact_numbers = None
+        locations = None
+        tags = None
+        metas = None
+        post_date = None
+        expire_date = None
+
         page_source = self.driver.page_source
         soup = BeautifulSoup(page_source, 'html.parser')
+        try:
+            title = soup.select("title")[0]
+            title = title.text if title else ''
+        except:
+            pass
+        try:
+            metatags = soup.find_all('meta', attrs={'name': 'robots'})
+            expire_date = ""
+            for tag in metatags:
+                val = f'{tag.attrs["content"].lower()}'
+                if val.startswith("noarchive,nofollow,unavailable_after:"):
+                    expire_date = val.replace("noarchive,nofollow,unavailable_after:", "")
+                    break
+        except:
+            pass
+        try:
 
-        title = soup.select("title")[0]
-        title = title.text if title else ''
-
-        metatags = soup.find_all('meta', attrs={'name': 'robots'})
-        expire_date = ""
-        for tag in metatags:
-            val = f'{tag.attrs["content"].lower()}'
-            if val.startswith("noarchive,nofollow,unavailable_after:"):
-                expire_date = val.replace("noarchive,nofollow,unavailable_after:", "")
+            metatags = soup.find_all('meta', attrs={'property': 'og:image'})
+            base_image = ""
+            for tag in metatags:
+                base_image = f'{tag.attrs["content"].lower()}'
                 break
 
-        metatags = soup.find_all('meta', attrs={'property': 'og:image'})
-        base_image = ""
-        for tag in metatags:
-            base_image = f'{tag.attrs["content"].lower()}'
-            break
-
             # noarchive, nofollow, unavailable_after:
+        except:
+            pass
+        try:
+            post_date = soup.select(
+                "html body.on-item-detail div.app-content div.container.main div.ui-panel.is-rounded.item-detail div.ui-panel-content.ui-panel-block div.row.lg-g div.item-top.col-12.lg-8 p.item-intro span.date")[
+                0]
+            post_date = post_date.text if post_date else ''
+        except:
+            pass
+        try:
 
-        post_date = soup.select(
-            "html body.on-item-detail div.app-content div.container.main div.ui-panel.is-rounded.item-detail div.ui-panel-content.ui-panel-block div.row.lg-g div.item-top.col-12.lg-8 p.item-intro span.date")[
-            0]
-        post_date = post_date.text if post_date else ''
+            # Content
+            content = soup.select("div.item-description")[0]
+            content = content.text if content else ''
+        except:
+            pass
+        try:
+            # Person Name
+            person_name = soup.select("span.poster")[0]
+            person_name = person_name.text if person_name else ''
+        except:
+            pass
+        try:
+            # Contact Details
+            contact_numbers = soup.select('.item-contact-more.is-showable ul:first-child span.h3')
+            contact_numbers = [c.text for c in contact_numbers]
+        except:
+            pass
+        try:
+            # Location
+            locations = soup.select('p.item-intro span.location')
+            locations = [l.text for l in locations]
+        except:
+            pass
+        try:
+            # Location
+            price = soup.select(
+                'html body.on-item-detail div.app-content div.container.main div.ui-panel.is-rounded.item-detail div.ui-panel-content.ui-panel-block div.row.lg-g div.col-12.lg-8.item-body div.row.lg-g div.col-12.lg-8 div.item-price div.ui-price div.ui-price-tag span.amount')
+            price = [l.text for l in price]
+        except:
+            pass
+        try:
+            # Tags
+            tags = soup.select("li.ui-crumb.breadcrumb a span")
+            tags = [t.text for t in tags]
+        except:
+            pass
+        try:
+            # Keys
+            metas_ = soup.select('div.item-properties dl')
+            metas = {}
+            for m in metas_:
+                key = m.select('dt')
+                key = key[0].text if key and len(key) > 0 else ''
+                value = m.select('dd')
+                value = value[0].text if value and len(value) > 0 else ''
 
-        # expire_date = soup.select(
-        #     "head > meta:nth-child(33)")[
-        #     0]
-        # expire_date = post_date if post_date else ''
-
-        # Content
-        content = soup.select("div.item-description")[0]
-        content = content.text if content else ''
-        # Person Name
-        person_name = soup.select("span.poster")[0]
-        person_name = person_name.text if person_name else ''
-        # Contact Details
-        contact_numbers = soup.select('.item-contact-more.is-showable ul:first-child span.h3')
-        contact_numbers = [c.text for c in contact_numbers]
-
-        # Location
-        locations = soup.select('p.item-intro span.location')
-        locations = [l.text for l in locations]
-        # Location
-        price = soup.select(
-            'html body.on-item-detail div.app-content div.container.main div.ui-panel.is-rounded.item-detail div.ui-panel-content.ui-panel-block div.row.lg-g div.col-12.lg-8.item-body div.row.lg-g div.col-12.lg-8 div.item-price div.ui-price div.ui-price-tag span.amount')
-        price = [l.text for l in price]
-
-        # Tags
-        tags = soup.select("li.ui-crumb.breadcrumb a span")
-        tags = [t.text for t in tags]
-
-        # Keys
-        metas_ = soup.select('div.item-properties dl')
-        metas = {}
-        for m in metas_:
-            key = m.select('dt')
-            key = key[0].text if key and len(key) > 0 else ''
-            value = m.select('dd')
-            value = value[0].text if value and len(value) > 0 else ''
-
-            metas[key] = value
-
+                metas[key] = value
+        except:
+            pass
+        
         item = ClassifiedWebCrawlerItem()
         item["crawler_name"] = self.name
         item["url"] = response.url
