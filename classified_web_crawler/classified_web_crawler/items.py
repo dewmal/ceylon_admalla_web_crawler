@@ -10,6 +10,7 @@ import scrapy
 
 class ClassifiedWebCrawlerItem(scrapy.Item):
     # define the fields for your item here like:
+    crawler_name = scrapy.Field()
     url = scrapy.Field()
     base_image = scrapy.Field()
     title = scrapy.Field()

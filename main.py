@@ -4,6 +4,7 @@ from scrapy.crawler import CrawlerProcess
 from scrapy.settings import Settings
 
 from classified_web_crawler.classified_web_crawler import settings
+from classified_web_crawler.classified_web_crawler.spiders.hitad import HitadSpider
 from classified_web_crawler.classified_web_crawler.spiders.ikman import IkmanSpider
 
 # from classified_web_crawler.classified_web_crawler.middlewares import SeleniumMiddleware
@@ -29,4 +30,5 @@ process = CrawlerProcess(settings={
 })
 
 process.crawl(IkmanSpider)
+process.crawl(HitadSpider)
 process.start()  # the script will block here until the crawling is finished

@@ -63,7 +63,6 @@ class IkmanSpider(CrawlSpider):
             base_image = f'{tag.attrs["content"].lower()}'
             break
 
-
             # noarchive, nofollow, unavailable_after:
 
         post_date = soup.select(
@@ -90,7 +89,8 @@ class IkmanSpider(CrawlSpider):
         locations = soup.select('p.item-intro span.location')
         locations = [l.text for l in locations]
         # Location
-        price = soup.select('html body.on-item-detail div.app-content div.container.main div.ui-panel.is-rounded.item-detail div.ui-panel-content.ui-panel-block div.row.lg-g div.col-12.lg-8.item-body div.row.lg-g div.col-12.lg-8 div.item-price div.ui-price div.ui-price-tag span.amount')
+        price = soup.select(
+            'html body.on-item-detail div.app-content div.container.main div.ui-panel.is-rounded.item-detail div.ui-panel-content.ui-panel-block div.row.lg-g div.col-12.lg-8.item-body div.row.lg-g div.col-12.lg-8 div.item-price div.ui-price div.ui-price-tag span.amount')
         price = [l.text for l in locations]
 
         # Tags
@@ -109,6 +109,7 @@ class IkmanSpider(CrawlSpider):
             metas[key] = value
 
         item = ClassifiedWebCrawlerItem()
+        item["crawler_name"] = self.name
         item["url"] = response.url
         item["base_image"] = base_image
         item["title"] = title
