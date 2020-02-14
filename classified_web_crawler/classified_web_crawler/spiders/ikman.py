@@ -16,11 +16,11 @@ class IkmanSpider(CrawlSpider):
     start_urls = ['http://ikman.lk/']
     rules = (
         Rule(
-            LinkExtractor(allow="^(http|https):\/\/ikman.lk\/(en|si)\/ad\/([^/]+)(^\/)?$"),
+            LinkExtractor(allow="^(http|https):\/\/ikman.lk\/en\/ad\/([^/]+)(^\/)?$"),
             callback="parse_item"
         ),
         Rule(
-            LinkExtractor(allow="^(http|https)://ikman.lk/(en|si)/(ads|ad|shops|jobs).*."),
+            LinkExtractor(allow="^(http|https)://ikman.lk/en/(ads|ad|shops|jobs).*."),
             callback='parse'
         ),
     )
@@ -42,8 +42,11 @@ class IkmanSpider(CrawlSpider):
     def parse_item(self, response):
         self.parse(response)
         self.driver.get(response.url)
-        all_show_number = self.driver.find_element_by_css_selector("span.gtm-show-number")
-        all_show_number.click()
+        try:
+            all_show_number = self.driver.find_element_by_css_selector("span.gtm-show-number")
+            all_show_number.click()
+        except:
+            pass
 
         base_image = None
         title = None
