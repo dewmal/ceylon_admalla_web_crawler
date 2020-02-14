@@ -7,7 +7,7 @@ from scrapy.linkextractors import LinkExtractor
 from scrapy.spiders import Rule, CrawlSpider
 from selenium import webdriver
 
-from classified_web_crawler.items import ClassifiedWebCrawlerItem
+from classified_web_crawler.classified_web_crawler.items import ClassifiedWebCrawlerItem
 
 
 class IkmanSpider(CrawlSpider):
