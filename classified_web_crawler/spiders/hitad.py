@@ -7,7 +7,7 @@ from scrapy.spiders import CrawlSpider, Rule
 
 from scrapy.linkextractors import LinkExtractor
 
-from classified_web_crawler.classified_web_crawler.items import ClassifiedWebCrawlerItem
+from classified_web_crawler.items import ClassifiedWebCrawlerItem
 
 
 class HitadSpider(CrawlSpider):

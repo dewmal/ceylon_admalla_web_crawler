@@ -7,7 +7,7 @@ from scrapy.linkextractors import LinkExtractor
 from scrapy.spiders import Rule, CrawlSpider
 from selenium import webdriver
 
-from classified_web_crawler.classified_web_crawler.items import ClassifiedWebCrawlerItem
+from classified_web_crawler.items import ClassifiedWebCrawlerItem
 
 
 class IkmanSpider(CrawlSpider):
@@ -74,7 +74,6 @@ class IkmanSpider(CrawlSpider):
                 val = f'{tag.attrs["content"].lower()}'
                 if val.startswith("noarchive,nofollow,unavailable_after:"):
                     expire_date = val.replace("noarchive,nofollow,unavailable_after:", "")
-                    expire_date.st
                     break
             # expire_date=datetime.strptime(post_date, "%Y-%m-%d %H:%M %p")
         except:
