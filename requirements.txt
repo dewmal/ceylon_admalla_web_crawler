@@ -4,3 +4,4 @@ chromedriver-binary==79.0.3945.36
 scrapy-selenium
 beautifulsoup4
 PyMongo
+pycron

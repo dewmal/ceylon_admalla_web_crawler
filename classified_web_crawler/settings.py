@@ -90,8 +90,9 @@ AUTOTHROTTLE_MAX_DELAY = 60
 # HTTPCACHE_DIR = 'httpcache'
 # HTTPCACHE_IGNORE_HTTP_CODES = []
 # HTTPCACHE_STORAGE = 'scrapy.extensions.httpcache.FilesystemCacheStorage'
-MONGO_URI = "mongodb://root:br2n4P3gqotR@44.233.75.14:27017",
-MONGO_DATABASE = "classified_crawler",
+MONGO_URI = "mongodb://root:br2n4P3gqotR@44.233.75.14:27017"
+MONGO_DATABASE = "classified_crawler"
 ITEM_PIPELINES = {
-    'classified_web_crawler.pipelines.ClassifiedWebCrawlerPipeline': 300,
+    'classified_web_crawler.pipelines.ClassifiedWebCrawlerPipeline': 300
 }
+IS_TEST = True

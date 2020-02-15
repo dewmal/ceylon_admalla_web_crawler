@@ -2,11 +2,13 @@
 import datetime
 import os
 
+import scrapy
 from bs4 import BeautifulSoup
 from scrapy.linkextractors import LinkExtractor
 from scrapy.spiders import Rule, CrawlSpider
 from selenium import webdriver
 
+from classified_web_crawler import settings
 from classified_web_crawler.items import ClassifiedWebCrawlerItem
 
 
@@ -25,10 +27,12 @@ class IkmanSpider(CrawlSpider):
         ),
     )
 
+    # def parse(self, response):
+    #     pass
+
     def __init__(self, *a, **kw):
         super().__init__(*a, **kw)
         # import chromedriver_binary
-        import chromedriver_binary
 
         chrome_options = webdriver.ChromeOptions()
         chrome_options.add_argument('--no-sandbox')
@@ -37,7 +41,11 @@ class IkmanSpider(CrawlSpider):
         chrome_options.add_argument('--log-level=3')
         chrome_options.add_argument('--disable-gpu')
         # path = os.getenv("CHROMEDRIVER_DIR")
-        self.driver = webdriver.Chrome('/usr/local/bin/chromedriver', chrome_options=chrome_options)
+        if not settings.IS_TEST:
+            self.driver = webdriver.Chrome('/usr/local/bin/chromedriver', chrome_options=chrome_options)
+        else:
+            import chromedriver_binary
+            self.driver = webdriver.Chrome(chrome_options=chrome_options)
 
     def parse_item(self, response):
         self.parse(response)
